@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_animalfarm" default="compile.module.animalfarm">
+  <dirname property="module.animalfarm.basedir" file="${ant.file.module_animalfarm}"/>
+  
+  <property name="module.jdk.home.animalfarm" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.animalfarm" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.animalfarm" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.animalfarm" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="animalfarm.output.dir" value="${module.animalfarm.basedir}/out/production/AnimalFarm"/>
+  <property name="animalfarm.testoutput.dir" value="${module.animalfarm.basedir}/out/test/AnimalFarm"/>
+  
+  <path id="animalfarm.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="animalfarm.module.production.classpath">
+    <path refid="${module.jdk.classpath.animalfarm}"/>
+  </path>
+  
+  <path id="animalfarm.runtime.production.module.classpath">
+    <pathelement location="${animalfarm.output.dir}"/>
+  </path>
+  
+  <path id="animalfarm.module.classpath">
+    <path refid="${module.jdk.classpath.animalfarm}"/>
+    <pathelement location="${animalfarm.output.dir}"/>
+  </path>
+  
+  <path id="animalfarm.runtime.module.classpath">
+    <pathelement location="${animalfarm.testoutput.dir}"/>
+    <pathelement location="${animalfarm.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.animalfarm">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.animalfarm">
+    <patternset refid="excluded.from.module.animalfarm"/>
+  </patternset>
+  
+  <path id="animalfarm.module.sourcepath">
+    <dirset dir="${module.animalfarm.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.animalfarm" depends="compile.module.animalfarm.production,compile.module.animalfarm.tests" description="Compile module AnimalFarm"/>
+  
+  <target name="compile.module.animalfarm.production" depends="register.custom.compilers" description="Compile module AnimalFarm; production classes">
+    <mkdir dir="${animalfarm.output.dir}"/>
+    <javac2 destdir="${animalfarm.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.animalfarm}/javac">
+      <compilerarg line="${compiler.args.animalfarm}"/>
+      <bootclasspath refid="animalfarm.module.bootclasspath"/>
+      <classpath refid="animalfarm.module.production.classpath"/>
+      <src refid="animalfarm.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.animalfarm"/>
+    </javac2>
+    
+    <copy todir="${animalfarm.output.dir}">
+      <fileset dir="${module.animalfarm.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.animalfarm.tests" depends="register.custom.compilers,compile.module.animalfarm.production" description="compile module AnimalFarm; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.animalfarm" description="cleanup module">
+    <delete dir="${animalfarm.output.dir}"/>
+    <delete dir="${animalfarm.testoutput.dir}"/>
+  </target>
+</project>
